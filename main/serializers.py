@@ -56,6 +56,7 @@ class ClassroomPostSerializer(serializers.ModelSerializer):
 
 class ClassroomPostCommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
+    classroom_post = serializers.ReadOnlyField(source='comment')
 
     class Meta:
         model = models.ClassroomPostComment
