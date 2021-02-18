@@ -1,10 +1,7 @@
 from django.urls import path,include
-from rest_framework import routers 
 from . import views
 
 
-router = routers.DefaultRouter()
-router.register("view", views.ClassroomViewSet)
 
 urlpatterns = [
     path("",views.UserList.as_view(),name="user-list"),
