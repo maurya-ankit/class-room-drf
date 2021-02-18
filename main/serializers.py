@@ -3,16 +3,17 @@ from . import models
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
-    classroomposts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # classroomposts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:
         fields = [
             'id',
             'username',
             'first_name',
             'last_name',
-            'classroomposts',
-            'comment',
+            # 'classroomposts',
+            # 'comment',
+            'password'
             ]
         model = User
 

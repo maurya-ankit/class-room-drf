@@ -11,21 +11,23 @@ class TimeStampMixin(models.Model):
     class Meta:
         abstract = True
 
-# class User(AbstractUser,TimeStampMixin):
-#     username = models.CharField(max_length=10,blank = True, null = True, unique = True)
-#     first_name = models.CharField(max_length = 15)
-#     last_name = models.CharField(max_length = 15,default="")
-#     email = models.EmailField()
+'''
+class User(AbstractUser,TimeStampMixin):
+    username = models.CharField(max_length=10,blank = True, null = True, unique = True)
+    first_name = models.CharField(max_length = 15)
+    last_name = models.CharField(max_length = 15,default="")
+    email = models.EmailField()
 
-#     def __str__(self):
-#         return self.username
+    def __str__(self):
+        return self.username
 
-#     @property
-#     def full_name(self):
-#         return self.first_name+" "+self.last_name
+    @property
+    def full_name(self):
+        return self.first_name+" "+self.last_name
 
-#     # def save(self,*args,**kwargs):
-#     #     pass
+    # def save(self,*args,**kwargs):
+    #     pass
+'''
 
 class Classroom(TimeStampMixin):
     name = models.CharField(max_length=15)
@@ -33,6 +35,7 @@ class Classroom(TimeStampMixin):
 
     def __str__(self):
         return self.name
+    
     
     @property
     def total_members(self):

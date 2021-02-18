@@ -8,6 +8,7 @@ from . import serializers
 from rest_framework.response import Response
 from  .permissions import IsOwnerOrReadOnly,ClassroomOwnerOrReadOnly
 from rest_framework import permissions
+from rest_framework.exceptions import ValidationError
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -22,48 +23,110 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class ClassroomList(generics.ListCreateAPIView):
     # queryset = Classroom.objects.all()
     serializer_class = serializers.ClassroomSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        ClassroomOwnerOrReadOnly,
+        ]
 
     def perform_create(self,serializer):
         obj = serializer.save()
         Membership(person=self.request.user,is_Admin=True,classroom=obj).save()
 
     def get_queryset(self):
-        return Classroom.objects.filter(members = self.request.user)
+        queryset = Classroom.objects.filter(members = self.request.user)
+         
+        if len(queryset):
+            return queryset
+        else:
+            raise ValidationError(detail='Invalid Params')
 
 
 class ClassroomDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Classroom.objects.all()
+    
     serializer_class = serializers.ClassroomSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,ClassroomOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated,ClassroomOwnerOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Classroom.objects.all()
+        return queryset.filter(members = self.request.user)
+
 
 
 class MembershipList(generics.ListCreateAPIView):
     # queryset = Membership.objects.all()
     serializer_class = serializers.MembershipSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Membership.objects.filter(person=self.request.user)
+        queryset = Membership.objects.all()
+        # Getting classroom id from query parameters in url -> "/?classroom=1"
+        classroom = self.request.query_params.get('classroom', None)
+        if classroom is not None:
+            queryset = queryset.filter(classroom__pk=classroom)
+        else:
+            queryset = Membership.objects.none()
+        
+        status = False
+        for q in queryset:
+            if q.person==self.request.user:
+                status = True
+                break
+
+        
+        return queryset if status else Membership.objects.none()
 
 
 class MembershipDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Membership.objects.all()
+    # queryset = Membership.objects.all()
     serializer_class = serializers.MembershipSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,ClassroomOwnerOrReadOnly]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        ]
+        
+    def get_queryset(self):
+        queryset = Membership.objects.all()
+        # Getting classroom id from query parameters in url -> "/?classroom=1"
+        classroom = self.request.query_params.get('classroom', None)
+        if classroom is not None:
+            queryset = queryset.filter(classroom__pk=classroom)
+        else:
+            queryset = Membership.objects.none()
+        
+        status = False
+        for q in queryset:
+            if q.person==self.request.user:
+                status = True
+                break
+
+        
+        return queryset if status else Membership.objects.none()
+
 
 
 
 
 class ClassroomPostList(generics.ListCreateAPIView):
-    queryset = ClassroomPost.objects.all()
     serializer_class = serializers.ClassroomPostSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
         cpk = None if self.request.data.get('classroom')==None else self.request.data.get('classroom')
         classroom = Classroom.objects.filter(pk=cpk).first()
         serializer.save(author=self.request.user,classroom=classroom)
+    def get_queryset(self):
+        queryset = ClassroomPost.objects.all()
+        # Getting classroom id from query parameters in url -> "/?classroom=1"
+        classroom = self.request.query_params.get('classroom', None)
+        if classroom is not None:
+            queryset = queryset.filter(classroom__pk=classroom)
+        else:
+            queryset = Membership.objects.none()
+
+        is_member = bool(len(Membership.objects.filter(classroom__pk=classroom,person=self.request.user)))
+
+        return queryset if is_member else ClassroomPost.objects.none()
+
+
 
 class ClassroomPostDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = ClassroomPost.objects.all()
