@@ -8,7 +8,7 @@ from . import serializers
 from rest_framework.response import Response
 from  .permissions import IsOwnerOrReadOnly,ClassroomOwnerOrReadOnly
 from rest_framework import permissions
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError,ParseError
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -110,9 +110,14 @@ class ClassroomPostList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def perform_create(self, serializer):
-        cpk = None if self.request.data.get('classroom')==None else self.request.data.get('classroom')
-        classroom = Classroom.objects.filter(pk=cpk).first()
-        serializer.save(author=self.request.user,classroom=classroom)
+        # cpk = None if self.request.data.get('classroom')==None else self.request.data.get('classroom')
+        classroom = self.request.query_params.get('classroom', None)
+        if classroom is not None:
+            obj = Classroom.objects.filter(pk=classroom).first()
+            serializer.save(author=self.request.user,classroom=obj)
+        else:
+            raise ParseError(detail="classroom id not available")
+        
     def get_queryset(self):
         queryset = ClassroomPost.objects.all()
         # Getting classroom id from query parameters in url -> "/?classroom=1"
@@ -129,9 +134,23 @@ class ClassroomPostList(generics.ListCreateAPIView):
 
 
 class ClassroomPostDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ClassroomPost.objects.all()
     serializer_class = serializers.ClassroomPostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        queryset = ClassroomPost.objects.all()
+        # Getting classroom id from query parameters in url -> "/?classroom=1"
+        classroom = self.request.query_params.get('classroom', None)
+        if classroom is not None:
+            queryset = queryset.filter(classroom__pk=classroom)
+        else:
+            queryset = Membership.objects.none()
+
+        is_member = bool(len(Membership.objects.filter(classroom__pk=classroom,person=self.request.user)))
+
+        return queryset if is_member else ClassroomPost.objects.none()
+
+
 
 
 class ClassroomPostCommentList(generics.ListCreateAPIView):
