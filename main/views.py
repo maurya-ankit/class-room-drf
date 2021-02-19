@@ -33,9 +33,9 @@ class ClassroomList(generics.ListCreateAPIView):
         Membership(person=self.request.user,is_Admin=True,classroom=obj).save()
 
     def get_queryset(self):
-        queryset = Classroom.objects.filter(members = self.request.user)
-         
-        return queryset
+        # queryset = Classroom.objects.filter(members = self.request.user)
+        # return queryset
+        return self.request.user.classroom_set.all()
 
 
 class ClassroomDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -44,8 +44,9 @@ class ClassroomDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated,ClassroomOwnerOrReadOnly]
 
     def get_queryset(self):
-        queryset = Classroom.objects.all()
-        return queryset.filter(members = self.request.user)
+        # queryset = Classroom.objects.all()
+        # return queryset.filter(members = self.request.user)
+        return self.request.user.classroom_set.all()
 
 
 
@@ -171,7 +172,7 @@ class ClassroomPostDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class ClassroomPostCommentList(generics.ListCreateAPIView):
     serializer_class = serializers.ClassroomPostCommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     # def perform_create(self,serializer):
     #     serializer.save(author=self.request.user)
@@ -212,7 +213,23 @@ class ClassroomPostCommentList(generics.ListCreateAPIView):
 
 
 class ClassroomPostCommentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ClassroomPostComment.objects.all()
     serializer_class = serializers.ClassroomPostCommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated,IsOwnerOrReadOnly]
 
+    def get_queryset(self):
+        queryset = ClassroomPostComment.objects.all()
+        classroom = self.request.query_params.get('classroom', None)
+        post = self.request.query_params.get('post',None)
+        if classroom is None:
+            raise ParseError(detail="classroom id not available")
+        elif post is None:
+            raise ParseError(detail="post id not available")
+        else:
+            classroom_obj = Classroom.objects.filter(pk=classroom,members=self.request.user)
+            if not len(classroom_obj):
+                raise ParseError(detail="you are not a member of this classroom")
+            is_classroomPost = len(ClassroomPost.objects.filter(classroom__pk=classroom))
+            if is_classroomPost:
+                return queryset.filter(classroom_post__pk=post,classroom_post__classroom__pk=classroom)
+            else:
+                raise ParseError(detail="not a post of this classroom")
