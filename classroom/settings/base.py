@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'main.apps.MainConfig',
-    'rest_framework.authtoken'
+    'knox',
+    'accounts.apps.AccountsConfig',
+    # 'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -102,9 +104,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'knox.auth.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
+    'DATETIME_FORMAT': "%m/%d/%Y %H:%M:%S",
     
 }
 

@@ -19,5 +19,7 @@ from django.urls import path,include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('main.urls')),
+    path('auth/',include('accounts.api.urls')),
+    path('api/auth/', include('knox.urls')),
     path('api-auth/', include('rest_framework.urls'),name="api"),
 ]
