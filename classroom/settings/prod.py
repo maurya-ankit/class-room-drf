@@ -20,4 +20,7 @@ CORS_ALLOW_CREDENTIALS = True
 =======
 
 CORS_ORIGIN_ALLOW_ALL=True
+<<<<<<< HEAD
 >>>>>>> 6dbf7c7... added cors-header
+=======
+>>>>>>> 6dbf7c7fac9542f3c4bf59c97fa20a76b8f3aec8
