@@ -44,6 +44,7 @@ class ClassroomPostSerializer(serializers.ModelSerializer):
         model = models.ClassroomPost
         # fields = '__all__'
         fields = [
+            'id',
             'title',
             'subtitle',
             'content',
