@@ -8,19 +8,5 @@ REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES']= (
         'rest_framework.renderers.JSONRenderer',
     )
 
-<<<<<<< HEAD
-CORS_ORIGIN_ALLOW_ALL = True # If this is used then `CORS_ORIGIN_WHITELIST` will not have any effect
-CORS_ALLOW_CREDENTIALS = True
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:3030',
-# ] # If this is used, then not need to use `CORS_ORIGIN_ALLOW_ALL = True`
-# CORS_ORIGIN_REGEX_WHITELIST = [
-#     'http://localhost:3030',
-# ]
-=======
 
 CORS_ORIGIN_ALLOW_ALL=True
-<<<<<<< HEAD
->>>>>>> 6dbf7c7... added cors-header
-=======
->>>>>>> 6dbf7c7fac9542f3c4bf59c97fa20a76b8f3aec8
