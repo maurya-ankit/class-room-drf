@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from classroom.views import GoogleLogin
 from django.contrib import admin
 from django.urls import path,include
 
@@ -20,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('main.urls')),
     path('auth/',include('accounts.api.urls')),
-    path('api/auth/', include('knox.urls')),
-    path('api-auth/', include('rest_framework.urls'),name="api"),
+    # path('api/auth/', include('knox.urls')),
+    # path('api-auth/', include('rest_framework.urls'),name="api"),
+     path('rest-auth/google/', GoogleLogin.as_view(), name='google_login')
 ]
