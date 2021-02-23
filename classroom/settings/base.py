@@ -40,7 +40,15 @@ INSTALLED_APPS = [
     'knox',
     'accounts.apps.AccountsConfig',
     'corsheaders',
-    # 'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    #for social login
+     'django.contrib.sites',
+     'allauth',
+     'dj_rest_auth',
+     'dj_rest_auth.registration',
+     'allauth.account',
+     'allauth.socialaccount',
+     'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -143,3 +151,5 @@ STATIC_URL = '/static/'
 # SESSION_COOKIE_SECURE = True
 # CSRF_COOKIE_SECURE = True
 # SECURE_SSL_REDIRECT = True
+
+SITE_ID = 1

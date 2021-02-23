@@ -4,9 +4,9 @@ from . import views
 
 
 urlpatterns = [
-    path("",views.UserList.as_view(),name="user-list"),
+    # path("",views.UserList.as_view(),name="user-list"),
     # path('', include(router.urls)),
-    path("<int:pk>/",views.UserDetail.as_view(),name="user-detail"),
+    # path("<int:pk>/",views.UserDetail.as_view(),name="user-detail"),
     path("posts/",views.ClassroomPostList.as_view(),name="posts-list"),
     path("posts/<int:pk>",views.ClassroomPostDetail.as_view(),name="posts-detail"),
     path("posts/comments/",views.ClassroomPostCommentList.as_view(),name="comment-list"),
