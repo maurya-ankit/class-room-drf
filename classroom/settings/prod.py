@@ -1,6 +1,6 @@
 from .base import REST_FRAMEWORK
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['ankitm.herokuapp.com']
 
