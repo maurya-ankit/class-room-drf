@@ -40,24 +40,27 @@ class ClassroomPostSerializer(serializers.ModelSerializer):
     author= serializers.ReadOnlyField(source='author.username')
     comment = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     total_comments = serializers.ReadOnlyField()
+    owner_avatar_url = serializers.ReadOnlyField()
     class Meta:
         model = models.ClassroomPost
-        # fields = '__all__'
-        fields = [
-            'id',
-            'title',
-            'subtitle',
-            'content',
-            'attachment',
-            'comment',
-            'author',
-            'total_comments',
-            ]
+        fields = '__all__'
+        # fields = [
+        #     'id',
+        #     'title',
+        #     'subtitle',
+        #     'content',
+        #     'attachment',
+        #     'comment',
+        #     'author',
+        #     'total_comments',
+        #     'owner_avatar_url',
+        #     ]
 
 
 class ClassroomPostCommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
     classroom_post = serializers.ReadOnlyField(source='comment')
+    owner_avatar_url = serializers.ReadOnlyField()
 
     class Meta:
         model = models.ClassroomPostComment

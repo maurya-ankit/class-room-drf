@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 from django.contrib.auth.models import User
-
+from allauth.socialaccount.models import SocialAccount
 class TimeStampMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -51,6 +51,10 @@ class Membership(TimeStampMixin):
 
     def __str__(self):
         return f"{self.person.username} in {self.classroom.name}"
+    
+    @property
+    def get_avatar_url(self):
+        return SocialAccount.objects.filter(user__id=self.author.pk)[0].get_avatar_url()
 
 
 # -------------------------------------------------------------------------------
@@ -70,6 +74,10 @@ class ClassroomPost(TimeStampMixin):
     @property
     def total_comments(self):
         return ClassroomPostComment.objects.filter(classroom_post=self).count()
+    @property
+    def owner_avatar_url(self):
+        return SocialAccount.objects.filter(user__id=self.author.pk)[0].get_avatar_url()
+
 
 class ClassroomPostComment(TimeStampMixin):
     classroom_post = models.ForeignKey(ClassroomPost,related_name= "comment",on_delete=models.CASCADE)
@@ -78,6 +86,10 @@ class ClassroomPostComment(TimeStampMixin):
 
     def __str__(self):
         return str(self.author)+', '+self.classroom_post.title[:10]
+
+    @property
+    def owner_avatar_url(self):
+        return SocialAccount.objects.filter(user__id=self.author.pk)[0].get_avatar_url()
 
     
 
